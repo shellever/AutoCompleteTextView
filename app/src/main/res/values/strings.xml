@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AutoCompleteTextView</string>
+    <string name="hint_type">Type something here</string>
+    <string name="chint_recent">Recent histories</string>
+    <string name="text_clear">Clear</string>
+    <string name="text_save">Save</string>
+    <string name="text_nothing">nothing here now</string>
+</resources>
