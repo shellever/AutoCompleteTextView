@@ -14,9 +14,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by linuxfor on 10/31/2016.
- */
 
 public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
@@ -25,7 +22,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
     public static final int MODE_STARTSWITH = 0x002;            // 0010b
     public static final int MODE_SPLIT = 0x004;                 // 0100b
     private static final String SPLIT_SEPARATOR = "[,.\\s]+";  // 分隔符，默认为空白符、英文逗号、英文句号
-    private static boolean isFound = false;         // 当MODE_STARTSWITH模式匹配成功时，不再进行MODE_SPLIT模式的匹配
+    private static boolean isFound = false;   // 当MODE_STARTSWITH模式匹配成功时，不再进行MODE_SPLIT模式的匹配
     private int defaultMode = MODE_STARTSWITH;                  // 0110b
 
     private LayoutInflater inflater;
@@ -42,6 +39,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
     public AutoCompleteAdapter(Context context, ArrayList<String> mOriginalValues, int maxMatch) {
         this.mOriginalValues = mOriginalValues;
+        this.mObjects = mOriginalValues;
         this.maxMatch = maxMatch;
         inflater = LayoutInflater.from(context);
         initViewHeight();
@@ -51,7 +49,8 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
         View view = inflater.inflate(R.layout.simple_dropdown_item_1line, null);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.layout_item);
         linearLayout.measure(0, 0);
-        simpleItemHeight = linearLayout.getMeasuredHeight();     // 其他方法获取的高度值会因View尚未被绘制而获取到0
+        // 其他方法获取的高度值会因View尚未被绘制而获取到0
+        simpleItemHeight = linearLayout.getMeasuredHeight();
     }
 
     public int getSimpleItemHeight() {
@@ -122,8 +121,10 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
     }
 
     public void clear() {
-        mOriginalValues.clear();
-        notifyDataSetChanged();         //
+        if(mOriginalValues != null && !mOriginalValues.isEmpty()) {
+            mOriginalValues.clear();
+            notifyDataSetChanged();         //
+        }
     }
 
     // Interface
@@ -193,18 +194,21 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
                     final String value = mOriginalValues.get(i);            // value
                     final String valueText = value.toLowerCase();           // valueText
 
-                    if ((defaultMode & MODE_CONTAINS) != MODE_NONE) {       // 1. 匹配所有
+                    // 1. 匹配所有
+                    if ((defaultMode & MODE_CONTAINS) != MODE_NONE) {
                         if (valueText.contains(prefixString)) {
                             newValues.add(value);
                         }
                     } else {    // support: defaultMode = MODE_STARTSWITH | MODE_SPLIT
-                        if ((defaultMode & MODE_STARTSWITH) != MODE_NONE) {   // 2. 匹配开头
+                        // 2. 匹配开头
+                        if ((defaultMode & MODE_STARTSWITH) != MODE_NONE) {
                             if (valueText.startsWith(prefixString)) {
                                 newValues.add(value);
                                 isFound = true;
                             }
                         }
-                        if (!isFound && (defaultMode & MODE_SPLIT) != MODE_NONE) {  // 4. 分隔符匹配，效率低
+                        // 3. 分隔符匹配，效率低
+                        if (!isFound && (defaultMode & MODE_SPLIT) != MODE_NONE) {
                             final String[] words = valueText.split(SPLIT_SEPARATOR);
                             for (String word : words) {
                                 if (word.startsWith(prefixString)) {
@@ -213,7 +217,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
                                 }
                             }
                         }
-                        if(isFound) {              // 若在MODE_STARTSWITH模式中匹配，则再次复位进行下一次判断
+                        if(isFound) {   // 若在MODE_STARTSWITH模式中匹配，则再次复位进行下一次判断
                             isFound = false;
                         }
                     }

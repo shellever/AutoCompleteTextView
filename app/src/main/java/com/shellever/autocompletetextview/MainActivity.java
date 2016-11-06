@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onSimpleItemDeletedListener(String value) {
                 String old_history = getHistoryFromSharedPreferences(SP_KEY_CUSTOM);    // 获取之前的记录
-                String new_history = old_history.replace(value + SP_SEPARATOR, "");        // 用空字符串替换掉要删除的记录
+                String new_history = old_history.replace(value + SP_SEPARATOR, "");     // 用空字符串替换掉要删除的记录
                 saveHistoryToSharedPreferences(SP_KEY_CUSTOM, new_history);             // 保存修改过的记录
             }
         });
@@ -157,9 +157,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.btn_clear:
-                clearHistoryInSharedPreferences();          // 试试清除历史记录
-                mSearchAdapter.clear();                     // 实时清除下拉提示框中的历史记录
+                mSearchAdapter.clear();                 // 实时清除下拉提示框中的历史记录
                 mCustomAdapter.clear();
+                clearHistoryInSharedPreferences();      // 试试清除历史记录
                 Toast.makeText(this, "All histories cleared", Toast.LENGTH_SHORT).show();
                 break;
         }

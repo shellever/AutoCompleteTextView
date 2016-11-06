@@ -1,0 +1,109 @@
+@startuml
+
+
+package Filterable.java {
+    interface Filterable {
+        Filter getFilter();
+    }
+}
+
+
+package BaseAdapter.java {
+    abstract class BaseAdapter{
+
+    }
+}
+
+
+package Filter.java {
+    abstract class Filter
+}
+
+
+package AutoCompleteAdapter.java {
+    interface OnFilterResultsListener {
+        void onFilterResultsListener(int count);
+    }
+
+    interface OnSimpleItemDeletedListener {
+        void onSimpleItemDeletedListener(String value);
+    }
+
+    class ArrayFilter {
+        private OnFilterResultsListener listener;
+        __
+        public ArrayFilter() {}
+        public ArrayFilter(OnFilterResultsListener listener);
+        .. Filter ..
+        protected FilterResults performFiltering(CharSequence prefix);
+        protected void publishResults(CharSequence constraint, FilterResults results);
+    }
+
+    Filter <|-- ArrayFilter : extends
+    OnFilterResultsListener <-- ArrayFilter : fieldify
+    OnFilterResultsListener <.. ArrayFilter : parameterify
+
+    class ViewHolder <<static>> {
+        TextView tv;
+        ImageView iv;
+    }
+
+    class AutoCompleteAdapter{
+        .. Constant Field ..
+        private static final int MODE_NONE = 0x000;
+        public static final int MODE_CONTAINS = 0x001;
+        public static final int MODE_STARTSWITH = 0x002;
+        public static final int MODE_SPLIT = 0x004;
+        private static final String SPLIT_SEPARATOR = "[,.\\s]+";
+        .. Common Field ..
+        private static boolean isFound = false;
+        private int defaultMode = MODE_STARTSWITH;
+
+        private LayoutInflater inflater;
+        private ArrayFilter mArrayFilter;
+        private ArrayList<String> mOriginalValues;
+        private List<String> mObjects;
+        private final Object mLock = new Object();
+        private int maxMatch = 10;
+        private int simpleItemHeight;
+        private OnFilterResultsListener mFilterListener;
+        private OnSimpleItemDeletedListener mDeleteListener;
+        __
+        .. Constructor ..
+        public AutoCompleteAdapter(Context context, ArrayList<String> mOriginalValues);
+        public AutoCompleteAdapter(Context context, ArrayList<String> mOriginalValues, int maxMatch);
+        .. Common Method ..
+        private void initViewHeight();
+        public void clear();
+        public void add(String item);
+        public void setDefaultMode(int defaultMode);
+        public int getSimpleItemHeight();
+        .. Adapter ..
+        public int getCount();
+        public Object getItem(int position);
+        public long getItemId(int position);
+        public View getView(final int position, View convertView, ViewGroup parent){new ViewHolder()};
+        .. OnFilterResultsListener ..
+        public void setOnFilterResultsListener(OnFilterResultsListener listener);
+        .. OnSimpleItemDeletedListener ..
+        public void setOnSimpleItemDeletedListener(OnSimpleItemDeletedListener listener);
+        .. Filterable ..
+        public Filter getFilter(){new ArrayFilter()};
+    }
+
+    BaseAdapter <|-- AutoCompleteAdapter : extends
+    Filterable <|.. AutoCompleteAdapter : implements
+    ArrayFilter <--+ AutoCompleteAdapter : nested
+    ArrayFilter <-- AutoCompleteAdapter : fieldify
+    ArrayFilter <.. AutoCompleteAdapter : reference
+    ViewHolder <--+ AutoCompleteAdapter : nested
+    ViewHolder <.. AutoCompleteAdapter : reference
+    OnFilterResultsListener <--+ AutoCompleteAdapter : nested
+    OnFilterResultsListener <-- AutoCompleteAdapter : fieldify
+    OnFilterResultsListener <.. AutoCompleteAdapter : parameterify
+    OnSimpleItemDeletedListener <--+ AutoCompleteAdapter : nested
+    OnSimpleItemDeletedListener <-- AutoCompleteAdapter : fieldify
+    OnSimpleItemDeletedListener <.. AutoCompleteAdapter : parameterify
+}
+
+@enduml
