@@ -510,7 +510,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 }
 ```
 
-- 下拉提示框的item布局
+- 下拉提示框的item布局simple_dropdown_item_1line.xml
 
 这里需要固定父类控件LinearLayout的高度，在AutoCompleteAdapter中会获取其高度用于设置AutoCompleteTextView的下拉菜单的高度
 

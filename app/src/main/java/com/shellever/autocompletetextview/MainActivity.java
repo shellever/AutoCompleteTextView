@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initSearchView();
         initCustomView();
 
-        // ??原生的Java在含有空格的字符串中无法转换成小写字母，直接返回原来的字符串
+        // ??原生Java在含有空格的字符串中无法转换成小写字母，直接返回原来的字符串
         TextView mTestTv = (TextView) findViewById(R.id.tv_test);
         String test = "Hello World And Hello Me, I'm Mr.DJ.";
         mTestTv.setText(test.toLowerCase());        // hello world and hello me, i'm mr.dj.
