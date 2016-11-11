@@ -270,6 +270,7 @@ AutoCompleteAdapter参考了ArrayAdapter的部分源代码，继承自`BaseAdapt
 1. 实现自动补全的匹配模式的配置，有三种可选匹配模式：MODE_CONTAINS / MODE_STARTSWITH(default) / MODE_SPLIT
 2. 实现匹配成功事件的回调，用于根据匹配结果数来动态设置下拉提示框的高度
 3. 实现删除匹配结果中子项的事件回调，用于实时更新存储在SharedPreferences的历史记录数据
+4. 支持使用`@`字符来预览所有提示内容
 
 ```java
 public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
