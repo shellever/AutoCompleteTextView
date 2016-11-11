@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
         mCustomAdapter = new AutoCompleteAdapter(this, mOriginalValues);
         mCustomAdapter.setDefaultMode(AutoCompleteAdapter.MODE_STARTSWITH | AutoCompleteAdapter.MODE_SPLIT);    // 设置匹配模式
+        mCustomAdapter.setSupportPreview(true);     // 支持使用特殊符号进行预览提示内容，默认为"@"
 
         simpleItemHeight = mCustomAdapter.getSimpleItemHeight();
         Toast.makeText(this, "simpleItemHeight: " + simpleItemHeight, Toast.LENGTH_SHORT).show(); // 103

@@ -33,6 +33,9 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
     private int maxMatch = 10;                      // 最多显示的item数目，负数表示全部
     private int simpleItemHeight;                   // 单行item的高度值，故需要在XML中固定父布局的高度值
 
+    private char previewChar = '@';                 // 默认字符
+    private boolean isSupportPreview = false;       // 是否可以使用@符号进行预览全部提示内容
+
     public AutoCompleteAdapter(Context context, ArrayList<String> mOriginalValues) {
         this(context, mOriginalValues, -1);
     }
@@ -55,6 +58,15 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
     public int getSimpleItemHeight() {
         return simpleItemHeight;                // 5 * 2 + 28(dp) => 103(px)
+    }
+
+    public void setSupportPreview(boolean isSupportPreview){
+        this.isSupportPreview = isSupportPreview;
+    }
+
+    public void setSupportPreview(boolean isSupportPreview, char previewChar){
+        this.isSupportPreview = isSupportPreview;
+        this.previewChar = previewChar;
     }
 
     @Override
@@ -84,7 +96,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.tv.setText(mObjects.get(position));
+        holder.tv.setText(mObjects.get(position));      // mObject => View
         holder.iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,7 +133,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
     }
 
     public void clear() {
-        if(mOriginalValues != null && !mOriginalValues.isEmpty()) {
+        if (mOriginalValues != null && !mOriginalValues.isEmpty()) {
             mOriginalValues.clear();
             notifyDataSetChanged();         //
         }
@@ -175,7 +187,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
             if (mOriginalValues == null) {
                 synchronized (mLock) {
-                    mOriginalValues = new ArrayList<>(mObjects);
+                    mOriginalValues = new ArrayList<>(mObjects);        // ??mOriginalValues = new ArrayList<>(mObjects);
                 }
             }
 
@@ -186,6 +198,13 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
                     results.count = list.size();
                 }
             } else {
+                if (isSupportPreview) {
+                    int index = prefix.toString().indexOf(String.valueOf(previewChar));
+                    if (index != -1) {
+                        prefix = prefix.toString().substring(index + 1);
+                    }
+                }
+
                 String prefixString = prefix.toString().toLowerCase();      // prefixString
                 final int count = mOriginalValues.size();                   // count
                 final ArrayList<String> newValues = new ArrayList<>(count); // newValues
@@ -217,7 +236,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
                                 }
                             }
                         }
-                        if(isFound) {   // 若在MODE_STARTSWITH模式中匹配，则再次复位进行下一次判断
+                        if (isFound) {   // 若在MODE_STARTSWITH模式中匹配，则再次复位进行下一次判断
                             isFound = false;
                         }
                     }
