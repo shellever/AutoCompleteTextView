@@ -190,6 +190,7 @@ private void initCustomView() {
     
     mCustomAdapter = new AutoCompleteAdapter(this, mOriginalValues);
     mCustomAdapter.setDefaultMode(AutoCompleteAdapter.MODE_STARTSWITH | AutoCompleteAdapter.MODE_SPLIT);// 设置匹配模式
+    mCustomAdapter.setSupportPreview(true);     // 支持使用特殊符号进行预览提示内容，默认为"@"
 
     simpleItemHeight = mCustomAdapter.getSimpleItemHeight();
     Toast.makeText(this, "simpleItemHeight: " + simpleItemHeight, Toast.LENGTH_SHORT).show(); // 103
@@ -289,6 +290,9 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
     private int maxMatch = 10;                      // 最多显示的item数目，负数表示全部
     private int simpleItemHeight;                   // 单行item的高度值，故需要在XML中固定父布局的高度值
 
+    private char previewChar = '@';                 // 默认字符
+    private boolean isSupportPreview = false;       // 是否可以使用@符号进行预览全部提示内容
+
     public AutoCompleteAdapter(Context context, ArrayList<String> mOriginalValues) {
         this(context, mOriginalValues, -1);
     }
@@ -312,6 +316,15 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
     public int getSimpleItemHeight() {
         return simpleItemHeight;                // 5 * 2 + 28(dp) => 103(px)
+    }
+    
+    public void setSupportPreview(boolean isSupportPreview){
+        this.isSupportPreview = isSupportPreview;
+    }
+
+    public void setSupportPreview(boolean isSupportPreview, char previewChar){
+        this.isSupportPreview = isSupportPreview;
+        this.previewChar = previewChar;
     }
 
     @Override
@@ -439,6 +452,13 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
                     results.count = list.size();
                 }
             } else {
+                if (isSupportPreview) {
+                    int index = prefix.toString().indexOf(String.valueOf(previewChar));
+                    if (index != -1) {
+                        prefix = prefix.toString().substring(index + 1);
+                    }
+                }
+            
                 String prefixString = prefix.toString().toLowerCase();      // prefixString
                 final int count = mOriginalValues.size();                   // count
                 final ArrayList<String> newValues = new ArrayList<>(count); // newValues
@@ -550,3 +570,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 - 效果演示
  
 ![autocompleteadapter_autocomplete_textview_320x512.gif](./screenshot/autocompleteadapter_autocomplete_textview_320x512.gif)
+
+支持使用`@`字符来预览所有提示内容
+
+![autocomplete_textview_preview_support.gif](./screenshot/autocomplete_textview_preview_support.gif)
